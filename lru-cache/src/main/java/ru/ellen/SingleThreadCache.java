@@ -14,37 +14,47 @@ public class SingleThreadCache extends LruCache {
         this.timeQueue = new LinkedList<>();
     }
 
-    public Object get(Object o) {
-        return cache.get(o);
+    public Object get(String key) {
+        return cache.getOrDefault(key, null);
     }
 
-    public void put(String o) {
-        cache.put(o, super.algorithm(o));
+    public void put(String key, Object value) {
+        if (cache.containsKey(key)) {
+            timeQueue.remove(key);
+            timeQueue.add(key);
+        } else {
+            if (cache.size() == capacity) {
+                String lastUsed = timeQueue.poll();
+                cache.remove(lastUsed);
+            }
+
+            timeQueue.add(key);
+            cache.put(key, value);
+        }
     }
 
     @Override
-    public Object algorithm(String o) {
+    public Object algorithm(String key) {
 
         // cache contains key
-        if (cache.keySet().contains(o)) {
+        if (cache.keySet().contains(key)) {
             // put element to the tail
-            timeQueue.remove(o);
-            timeQueue.add(o);
-
-            return get(o);
+            timeQueue.remove(key);
+            timeQueue.add(key);
+            return get(key);
         }
 
-        Object currentResult = super.algorithm(o);
+        Object currentResult = super.algorithm(key);
 
         if (cache.size() == capacity) {
-            Object lastUsed = timeQueue.poll();
+            String lastUsed = timeQueue.poll();
             cache.remove(lastUsed);
         }
 
-        timeQueue.offer(o);
-        cache.put(o, currentResult);
+        timeQueue.add(key);
+        cache.put(key, currentResult);
 
-        return o;
+        return key;
     }
 
     @Override
