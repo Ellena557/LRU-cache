@@ -15,7 +15,12 @@ public class SingleThreadCache extends LruCache {
     }
 
     public Object get(String key) {
-        return cache.getOrDefault(key, null);
+        if (cache.containsKey(key)) {
+            timeQueue.remove(key);
+            timeQueue.add(key);
+            return cache.get(key);
+        }
+        return null;
     }
 
     public void put(String key, Object value) {
@@ -41,7 +46,7 @@ public class SingleThreadCache extends LruCache {
             // put element to the tail
             timeQueue.remove(key);
             timeQueue.add(key);
-            return get(key);
+            return cache.get(key);
         }
 
         Object currentResult = super.algorithm(key);
