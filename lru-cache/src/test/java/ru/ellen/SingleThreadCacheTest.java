@@ -33,7 +33,7 @@ public class SingleThreadCacheTest {
 
         ArrayList<Integer> sizes = new ArrayList<>();
 
-        // Запускаем 10 раз, увеличивая случайность
+        // Запускаем 100 раз, увеличивая случайность
         for (int i = 0; i < 99; i++) {
             lruCache = new SingleThreadCache(3);
             ExecutorService service = Executors.newFixedThreadPool(10);
@@ -41,12 +41,21 @@ public class SingleThreadCacheTest {
                 service.execute(new CachePutter());
             }
             service.shutdown();
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             sizes.add(lruCache.getCache().size());
         }
 
         boolean cacheIsOk = sizes.stream().allMatch(el -> el == 3);
+        boolean containsGreater = sizes.stream().anyMatch(el -> el > 3);
 
         Assert.assertFalse(cacheIsOk);
+        Assert.assertTrue(containsGreater);
     }
 
     @Test
@@ -77,12 +86,21 @@ public class SingleThreadCacheTest {
                 service.execute(new CacheWorker());
             }
             service.shutdown();
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             sizes.add(lruCache.getCache().size());
         }
 
         boolean cacheIsOk = sizes.stream().allMatch(el -> el == 3);
+        boolean containsGreater = sizes.stream().anyMatch(el -> el > 3);
 
         Assert.assertFalse(cacheIsOk);
+        Assert.assertTrue(containsGreater);
     }
 
     private ArrayList<String> generateData() {
