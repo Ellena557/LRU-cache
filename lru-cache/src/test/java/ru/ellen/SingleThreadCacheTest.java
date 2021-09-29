@@ -12,7 +12,6 @@ public class SingleThreadCacheTest {
 
     private LruCache lruCache;
 
-
     @Test
     public void singleThreadTest() {
         lruCache = new SingleThreadCache(3);
@@ -26,6 +25,8 @@ public class SingleThreadCacheTest {
         Assert.assertTrue(cache.contains("1"));
         Assert.assertTrue(cache.contains("22"));
         Assert.assertTrue(cache.contains("55555"));
+
+        Assert.assertEquals(3, cache.size());
     }
 
     @Test
@@ -59,48 +60,18 @@ public class SingleThreadCacheTest {
     }
 
     @Test
-    public void singleThreadAlgorithmTest() {
+    public void cacheWithGetTest() {
         lruCache = new SingleThreadCache(3);
-        ArrayList<String> data = generateData();
-        for (String elem : data) {
-            lruCache.algorithm(elem);
-        }
 
-        Set cache = lruCache.getCache();
+        lruCache.put("1", 1);
+        lruCache.put("2", 2);
+        lruCache.put("3", 3);
+        lruCache.put("4", 4);
+        lruCache.put("5", 5);
+        lruCache.put("4", 7);
 
-        Assert.assertTrue(cache.contains("1"));
-        Assert.assertTrue(cache.contains("22"));
-        Assert.assertTrue(cache.contains("55555"));
-    }
-
-    @Test
-    public void multipleThreadAlgorithmTest() {
-
-        ArrayList<Integer> sizes = new ArrayList<>();
-
-        // Запускаем 10 раз, увеличивая случайность
-        for (int i = 0; i < 99; i++) {
-            lruCache = new SingleThreadCache(3);
-            ExecutorService service = Executors.newFixedThreadPool(10);
-            for (int j = 0; j < 10; j++) {
-                service.execute(new CacheWorker());
-            }
-            service.shutdown();
-
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            sizes.add(lruCache.getCache().size());
-        }
-
-        boolean cacheIsOk = sizes.stream().allMatch(el -> el == 3);
-        boolean containsGreater = sizes.stream().anyMatch(el -> el > 3);
-
-        Assert.assertFalse(cacheIsOk);
-        Assert.assertTrue(containsGreater);
+        Assert.assertNull(lruCache.get("2"));
+        Assert.assertEquals(7, (int) lruCache.get("4"));
     }
 
     private ArrayList<String> generateData() {
@@ -138,17 +109,6 @@ public class SingleThreadCacheTest {
             ArrayList<String> data = generateData();
             for (String elem : data) {
                 lruCache.put(elem, elem.length() + 7);
-            }
-        }
-    }
-
-    private class CacheWorker implements Runnable {
-
-        @Override
-        public void run() {
-            ArrayList<String> data = generateData();
-            for (String elem : data) {
-                lruCache.algorithm(elem);
             }
         }
     }

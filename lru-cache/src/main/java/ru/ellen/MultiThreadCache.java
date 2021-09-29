@@ -7,7 +7,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class MultiThreadCache extends LruCache {
+public class MultiThreadCache implements LruCache {
     private final int capacity;
     private ConcurrentHashMap<String, Object> cache;
     private ConcurrentLinkedQueue<String> timeQueue;
@@ -41,6 +41,7 @@ public class MultiThreadCache extends LruCache {
         try {
             if (cache.containsKey(key)) {
                 timeQueue.remove(key);
+                cache.put(key, value);
                 timeQueue.add(key);
             } else {
                 if (cache.size() == capacity) {
