@@ -5,13 +5,11 @@ import java.util.*;
 
 public class SingleThreadCache implements LruCache {
     private final int capacity;
-    private Map<String, Object> cache;
-    private LinkedList<String> timeQueue;
+    private Map<String, Object> cache = new HashMap<>();
+    private LinkedList<String> timeQueue = new LinkedList<>();
 
     public SingleThreadCache(int capacity) {
         this.capacity = capacity;
-        this.cache = new HashMap<>();
-        this.timeQueue = new LinkedList<>();
     }
 
     public Object get(String key) {

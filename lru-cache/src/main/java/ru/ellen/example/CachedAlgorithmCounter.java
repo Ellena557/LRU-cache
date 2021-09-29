@@ -7,13 +7,11 @@ import java.util.Set;
 
 public class CachedAlgorithmCounter extends AlgorithmCounter {
     private final int capacity;
-    private Map<String, Object> cache;
-    private LinkedList<String> timeQueue;
+    private Map<String, Object> cache = new HashMap<>();
+    private LinkedList<String> timeQueue = new LinkedList<>();
 
     public CachedAlgorithmCounter(int capacity) {
         this.capacity = capacity;
-        this.cache = new HashMap<>();
-        this.timeQueue = new LinkedList<>();
     }
 
     @Override
@@ -42,6 +40,6 @@ public class CachedAlgorithmCounter extends AlgorithmCounter {
         timeQueue.add(key);
         cache.put(key, currentResult);
 
-        return key;
+        return currentResult;
     }
 }

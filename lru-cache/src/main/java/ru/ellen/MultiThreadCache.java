@@ -9,8 +9,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MultiThreadCache implements LruCache {
     private final int capacity;
-    private ConcurrentHashMap<String, Object> cache;
-    private ConcurrentLinkedQueue<String> timeQueue;
+    private ConcurrentHashMap<String, Object> cache = new ConcurrentHashMap<>();
+    private ConcurrentLinkedQueue<String> timeQueue = new ConcurrentLinkedQueue<>();
 
     private ReadWriteLock lock = new ReentrantReadWriteLock();
     private Lock writeLock = lock.writeLock();
@@ -18,8 +18,6 @@ public class MultiThreadCache implements LruCache {
 
     public MultiThreadCache(int capacity) {
         this.capacity = capacity;
-        this.cache = new ConcurrentHashMap<>();
-        this.timeQueue = new ConcurrentLinkedQueue<>();
     }
 
     public Object get(String key) {
@@ -57,7 +55,6 @@ public class MultiThreadCache implements LruCache {
         }
     }
 
-    @Override
     public Set<String> getCache() {
         return cache.keySet();
     }
