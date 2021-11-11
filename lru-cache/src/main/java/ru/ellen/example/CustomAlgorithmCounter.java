@@ -6,7 +6,7 @@ import ru.ellen.SingleThreadCache;
 import java.util.Set;
 
 public class CustomAlgorithmCounter extends AlgorithmCounter {
-    private LruCache lruCache;
+    private final LruCache lruCache;
 
     public CustomAlgorithmCounter(int capacity) {
         this.lruCache = new SingleThreadCache(capacity);
@@ -18,14 +18,14 @@ public class CustomAlgorithmCounter extends AlgorithmCounter {
     }
 
     @Override
-    public Object algorithm(String key) {
+    public Object calculate(String key) {
 
         Object currentResult = lruCache.get(key);
 
         if (currentResult != null) {
             return currentResult;
         } else {
-            currentResult = super.algorithm(key);
+            currentResult = super.calculate(key);
             lruCache.put(key, currentResult);
             return currentResult;
         }

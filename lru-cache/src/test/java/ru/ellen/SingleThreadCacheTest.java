@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -70,8 +71,8 @@ public class SingleThreadCacheTest {
         lruCache.put("5", 5);
         lruCache.put("4", 7);
 
-        Assert.assertNull(lruCache.get("2"));
-        Assert.assertEquals(7, (int) lruCache.get("4"));
+        Assert.assertEquals(Optional.empty(), lruCache.get("2"));
+        Assert.assertEquals(7, lruCache.get("4").get());
     }
 
     private ArrayList<String> generateData() {

@@ -3,32 +3,32 @@ package ru.ellen;
 
 import java.util.*;
 
-public class SingleThreadCache implements LruCache {
+public class SingleThreadCache<K, V> implements LruCache<K, V> {
     private final int capacity;
-    private Map<String, Object> cache = new HashMap<>();
-    private LinkedList<String> timeQueue = new LinkedList<>();
+    private Map<K, V> cache = new HashMap<>();
+    private LinkedList<K> timeQueue = new LinkedList<>();
 
     public SingleThreadCache(int capacity) {
         this.capacity = capacity;
     }
 
-    public Object get(String key) {
+    public Optional<V> get(K key) {
         if (cache.containsKey(key)) {
             timeQueue.remove(key);
             timeQueue.add(key);
-            return cache.get(key);
+            return Optional.of(cache.get(key));
         }
-        return null;
+        return Optional.empty();
     }
 
-    public void put(String key, Object value) {
+    public void put(K key, V value) {
         if (cache.containsKey(key)) {
             timeQueue.remove(key);
             cache.put(key, value);
             timeQueue.add(key);
         } else {
             if (cache.size() == capacity) {
-                String lastUsed = timeQueue.poll();
+                K lastUsed = timeQueue.poll();
                 cache.remove(lastUsed);
             }
 
@@ -37,7 +37,7 @@ public class SingleThreadCache implements LruCache {
         }
     }
 
-    public Set<String> getCache() {
+    public Set<K> getCache() {
         return cache.keySet();
     }
 }

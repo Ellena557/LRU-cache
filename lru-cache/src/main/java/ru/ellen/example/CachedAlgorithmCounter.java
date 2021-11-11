@@ -20,17 +20,17 @@ public class CachedAlgorithmCounter extends AlgorithmCounter {
     }
 
     @Override
-    public Object algorithm(String key) {
+    public Object calculate(String key) {
 
         // cache contains key
-        if (cache.keySet().contains(key)) {
+        if (cache.containsKey(key)) {
             // put element to the tail
             timeQueue.remove(key);
             timeQueue.add(key);
             return cache.get(key);
         }
 
-        Object currentResult = super.algorithm(key);
+        Object currentResult = super.calculate(key);
 
         if (cache.size() == capacity) {
             String lastUsed = timeQueue.poll();

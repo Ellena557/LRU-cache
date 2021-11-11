@@ -17,7 +17,7 @@ private AlgorithmCounter algorithmCounter;
         algorithmCounter = new CachedAlgorithmCounter(3);
         ArrayList<String> data = generateData();
         for (String elem : data) {
-            algorithmCounter.algorithm(elem);
+            algorithmCounter.calculate(elem);
         }
 
         Set cache = algorithmCounter.getCache();
@@ -93,7 +93,7 @@ private AlgorithmCounter algorithmCounter;
         public void run() {
             ArrayList<String> data = generateData();
             for (String elem : data) {
-                algorithmCounter.algorithm(elem);
+                algorithmCounter.calculate(elem);
             }
         }
     }

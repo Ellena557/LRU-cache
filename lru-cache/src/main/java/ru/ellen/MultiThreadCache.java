@@ -1,5 +1,6 @@
 package ru.ellen;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -7,10 +8,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class MultiThreadCache implements LruCache {
+public class MultiThreadCache<K, V> implements LruCache<K, V> {
     private final int capacity;
-    private ConcurrentHashMap<String, Object> cache = new ConcurrentHashMap<>();
-    private ConcurrentLinkedQueue<String> timeQueue = new ConcurrentLinkedQueue<>();
+    private ConcurrentHashMap<K, V> cache = new ConcurrentHashMap<>();
+    private ConcurrentLinkedQueue<K> timeQueue = new ConcurrentLinkedQueue<>();
 
     private ReadWriteLock lock = new ReentrantReadWriteLock();
     private Lock writeLock = lock.writeLock();
@@ -20,21 +21,21 @@ public class MultiThreadCache implements LruCache {
         this.capacity = capacity;
     }
 
-    public Object get(String key) {
+    public Optional<V> get(K key) {
         readLock.lock();
         try {
             if (cache.containsKey(key)) {
                 timeQueue.remove(key);
                 timeQueue.add(key);
-                return cache.get(key);
+                return Optional.of(cache.get(key));
             }
-            return null;
+            return Optional.empty();
         } finally {
             readLock.unlock();
         }
     }
 
-    public void put(String key, Object value) {
+    public void put(K key, V value) {
         writeLock.lock();
         try {
             if (cache.containsKey(key)) {
@@ -43,7 +44,7 @@ public class MultiThreadCache implements LruCache {
                 timeQueue.add(key);
             } else {
                 if (cache.size() == capacity) {
-                    String lastUsed = timeQueue.poll();
+                    K lastUsed = timeQueue.poll();
                     cache.remove(lastUsed);
                 }
 
@@ -55,7 +56,7 @@ public class MultiThreadCache implements LruCache {
         }
     }
 
-    public Set<String> getCache() {
+    public Set<K> getCache() {
         return cache.keySet();
     }
 }

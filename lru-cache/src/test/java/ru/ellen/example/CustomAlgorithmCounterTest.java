@@ -15,8 +15,8 @@ public class CustomAlgorithmCounterTest {
 
         ArrayList<String> data = generateData();
         for (String elem : data) {
-            algorithmCounter.algorithm(elem);
-            customAlgorithmCounter.algorithm(elem);
+            algorithmCounter.calculate(elem);
+            customAlgorithmCounter.calculate(elem);
         }
 
         Assert.assertTrue(customAlgorithmCounter.getCache().containsAll(
